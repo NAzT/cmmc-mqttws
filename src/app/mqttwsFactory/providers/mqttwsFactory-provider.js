@@ -28,18 +28,18 @@ angular.module('cmmcMqttws')
                 mqtt = new Paho.MQTT.Client(host, port, "web_" + parseInt(Math.random() * 100, 10));
 
                 var options = {
-                        timeout: 3,
-                        useSSL: useTLS,
-                        cleanSession: cleansession,
-                        onSuccess: function() {
-                            var ev = events.connected || function() { };
-                            console.log("DEFAULT SUCCESS", arguments);
-                            ev.call();
-                        },
-                        onFailure: function (message) {
-                                console.log("failed");
-                                setTimeout(MQTTconnect, reconnectTimeout);
-                        }
+                    timeout: 3,
+                    useSSL: useTLS,
+                    cleanSession: cleansession,
+                    onSuccess: function() {
+                        var ev = events.connected || function() { };
+                        console.log("DEFAULT SUCCESS", arguments);
+                        ev.call(null, arguments);
+                    },
+                    onFailure: function (message) {
+                            console.log("failed");
+                            setTimeout(MQTTconnect, reconnectTimeout);
+                    }
                 };
 
                 if (username != null) {
@@ -62,21 +62,21 @@ angular.module('cmmcMqttws')
                  console.log("OPTIONS:", options);
 
                  var wrappedSocket = {
-                         on: function(event, func) {
-                             events[event] = func;
-                         },
-                         addListener: function() { },
-                         subscribe: function(topic, opts) {
-                            if (mqtt) {
-                                mqtt.subscribe(topic, opts || { qos: 0 });
-                            }
-                            else {
-                                console.log("MQTT CONNECTION FAILED");
-                            }
-                         },
-                         connect: function() {
-                                MQTTconnect();
-                         }
+                     on: function(event, func) {
+                         events[event] = func;
+                     },
+                     addListener: function() { },
+                     subscribe: function(topic, opts) {
+                        if (mqtt) {
+                            mqtt.subscribe(topic, opts || { qos: 0 });
+                        }
+                        else {
+                            console.log("MQTT CONNECTION FAILED");
+                        }
+                     },
+                     connect: function() {
+                        MQTTconnect();
+                     }
                  };
 
                  console.log("mqttwsFactory execute");
