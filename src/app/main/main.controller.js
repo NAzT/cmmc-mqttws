@@ -3,10 +3,16 @@
 
   angular
     .module('cmmcMqttws')
+    .factory("myMqtt", function(mqttwsFactory) {
+        var mySocket = mqttwsFactory({hello: "world"});
+        return mySocket;
+
+    })
     .controller('MainController', MainController);
 
   /** @ngInject */
-  function MainController($timeout, webDevTec, toastr) {
+  function MainController($timeout, webDevTec, toastr, myMqtt) {
+    console.log(myMqtt);
     var vm = this;
 
     vm.awesomeThings = [];

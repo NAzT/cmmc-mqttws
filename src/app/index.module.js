@@ -2,6 +2,7 @@
   'use strict';
 
   angular
-    .module('cmmcMqttws', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ui.router', 'ngMaterial']);
+    .module('cmmcMqttws', ['ngAnimate', 
+        'ngCookies', 'ngTouch', 'ngSanitize', 'ui.router', 'ngMaterial']);
 
 })();
