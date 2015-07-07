@@ -12,7 +12,10 @@ angular.module('cmmcMqttws')
     console.log("mqttwsFactory")
     // Method for instantiating
 
-   this.$get = ['$rootScope', '$timeout', function ($rootScope, $timeout) {
+   this.$get = ['mqttService', '$rootScope', '$timeout', function (mqttService, $rootScope, $timeout) {
+
+    console.log("SERVICE", mqttService);
+
      return function socketFactory (options) {
         console.log("OPTIONS:", options);
 
@@ -24,7 +27,16 @@ angular.module('cmmcMqttws')
 
         console.log("mqttwsFactory execute");
         options = options || {};
-
+          var callback = {
+              onMessageArrived: function(message) {
+                  var topic = message.destinationName;
+                  var payload = message.payloadString;
+              },
+              onSuccess: function(mqtt) {
+                console.log("CONNECTION SUCCESS", mqtt);
+              }
+          }
+        mqttService.connect(callback);
         return wrappedSocket;
       }
    }];

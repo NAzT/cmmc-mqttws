@@ -12,7 +12,15 @@
 
   /** @ngInject */
   function MainController($timeout, webDevTec, toastr, myMqtt) {
+
     console.log(myMqtt);
+
+    myMqtt.on("message", function() {
+      console.log("ON MESSSAGE", arguments);
+
+    });
+
+
     var vm = this;
 
     vm.awesomeThings = [];
