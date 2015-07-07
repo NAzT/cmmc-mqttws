@@ -4,7 +4,9 @@
   angular
     .module('cmmcMqttws')
     .factory("myMqtt", function(mqttwsFactory) {
-        var mySocket = mqttwsFactory({hello: "world"});
+        var options = {};
+
+        var mySocket = mqttwsFactory(options);
         return mySocket;
 
     })
@@ -12,15 +14,18 @@
 
   /** @ngInject */
   function MainController($timeout, webDevTec, toastr, myMqtt) {
-
     console.log(myMqtt);
 
-    myMqtt.on("message", function() {
-      console.log("ON MESSSAGE", arguments);
-
+    myMqtt.on('connected', function() {
+      console.log("MQTT CONNECTED", "IN CONTROLLR");
+      myMqtt.subscribe("#");
     });
 
+    myMqtt.on("message", function(topic, payload) {
+      console.log("ON MESSSAGE", topic, payload);
+    });
 
+    myMqtt.connect();
     var vm = this;
 
     vm.awesomeThings = [];
