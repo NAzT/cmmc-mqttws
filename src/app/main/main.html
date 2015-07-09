@@ -32,17 +32,19 @@
         </section>
 
         <section flex layout="row" layout-align="center">
-            <input ng-model="macaddr" type="text"/>
-            <md-button ng-click="connect()" href="#" class="md-raised">connect</md-button>
-        </section>
-
-        {{ myName }}
-
-        <div layout="column" layout-align="center center" style="height: 100px;">
             <md-select ng-model="user" md-on-open="loadUsers()" style="min-width: 200px;">
                 <md-select-label>{{ user ? user.name : 'Filter' }}</md-select-label>
                 <md-option ng-value="user" ng-repeat="user in users">{{user.name}}</md-option>
-            </md-select>
+            </md-select>            
+        </section>
+
+        <section flex layout="row" layout-align="center">
+            <input ng-model="myName[user.name]" type="text"/>
+            <md-button ng-click="connect()" href="#" class="md-raised">connect</md-button>
+        </section>
+
+        <div layout="column" layout-align="center center" style="height: 100px;">
+             <!-- {{ myName }} -->
             <p class="md-caption">Selected: {{ user ? myName[user.name] : 'No one yet' }}</p>
         </div>
 
