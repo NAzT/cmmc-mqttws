@@ -12,20 +12,43 @@
         .controller('MainController', MainController);
 
     /** @ngInject */
-    function MainController($timeout, webDevTec, toastr, myMqtt) {
+    function MainController($timeout, webDevTec, toastr, myMqtt, $scope) {
         console.log(myMqtt);
+
+        $scope.myName = { };
 
         myMqtt.on('connected', function() {
             console.log("MQTT CONNECTED", "IN CONTROLLR");
-            myMqtt.subscribe("#");
+            myMqtt.subscribe("esp8266/#");
         });
 
         myMqtt.on("message", function(topic, payload) {
-            console.log("ON MESSSAGE", topic, payload);
+
+            var json = { };
+            try {
+                json = angular.fromJson(payload);
+            }
+            catch(ex)
+            {
+               console.log("EX", ex); 
+            }
+
+            $scope.myName[json.d && json.d.myName] = topic;
+            delete $scope.myName.undefined
+
             $scope.payload = payload;
+            $scope.$apply();
         });
 
         myMqtt.connect();
+
+        $scope.loadUsers = function() {
+            var k = Object.keys($scope.myName);
+            $scope.users = k.map(function(k, idx, val) {
+                return { id: idx, name: k }
+            });
+        }
+
         var vm = this;
 
         vm.awesomeThings = [];
