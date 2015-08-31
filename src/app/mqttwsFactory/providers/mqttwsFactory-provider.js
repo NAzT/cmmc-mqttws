@@ -11,7 +11,7 @@ angular.module('cmmcMqttws')
     .provider('mqttwsFactory', function () {
         console.log("mqttwsFactory")
         // Method for instantiating
-
+        this.$get = function () {
         var host;
         var port;
         var useTLS = false;
@@ -23,41 +23,39 @@ angular.module('cmmcMqttws')
         var mqtt;
         var reconnectTimeout = 2000;
         var events = { };
+            function MQTTconnect() {
+                    mqtt = new Paho.MQTT.Client(host, port, "web_" + parseInt(Math.random() * 100, 10));
 
-        function MQTTconnect() {
-                mqtt = new Paho.MQTT.Client(host, port, "web_" + parseInt(Math.random() * 100, 10));
+                    var options = {
+                        timeout: 3,
+                        useSSL: useTLS,
+                        cleanSession: cleansession,
+                        onSuccess: function() {
+                            var ev = events.connected || function() { };
+                            console.log("DEFAULT SUCCESS", arguments);
+                            ev.call(null, arguments);
+                        },
+                        onFailure: function (message) {
+                                console.log("failed");
+                                setTimeout(MQTTconnect, reconnectTimeout);
+                        }
+                    };
 
-                var options = {
-                    timeout: 3,
-                    useSSL: useTLS,
-                    cleanSession: cleansession,
-                    onSuccess: function() {
-                        var ev = events.connected || function() { };
-                        console.log("DEFAULT SUCCESS", arguments);
-                        ev.call(null, arguments);
-                    },
-                    onFailure: function (message) {
-                            console.log("failed");
-                            setTimeout(MQTTconnect, reconnectTimeout);
+                    if (username != null) {
+                            options.userName = username;
+                            options.password = password;
                     }
-                };
 
-                if (username != null) {
-                        options.userName = username;
-                        options.password = password;
-                }
+                    mqtt.connect(options);
+                    mqtt.onMessageArrived = function(message) {
+                            var topic = message.destinationName;
+                            var payload = message.payloadString;
 
-                mqtt.connect(options);
-                mqtt.onMessageArrived = function(message) {
-                        var topic = message.destinationName;
-                        var payload = message.payloadString;
+                            var ev = events.message || function() { };
+                            ev.apply(null, [topic, payload, message]);
+                    }
+            }            
 
-                        var ev = events.message || function() { };
-                        ev.apply(null, [topic, payload, message]);
-                }
-        }
-
-        this.$get = function () {
             return function socketFactory (options) {
                  console.log("OPTIONS:", options);
 
@@ -82,8 +80,8 @@ angular.module('cmmcMqttws')
                  console.log("mqttwsFactory execute");
                  options = options || {};
 
-                 host = options.host || '128.199.104.122';
-                 port = options.port || 9001;
+                 host = options.host || 'rabbit.cmmc.ninja';
+                 port = options.port || 8000;
 
                  var callback = options.callback;
 
